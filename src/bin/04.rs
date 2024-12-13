@@ -32,7 +32,7 @@ const REV_WORD: &str = "SAMX";
 
 pub fn part_one(input: &str) -> Option<u32> {
     let mut total = 0;
-    println!("{}", input);
+    // println!("{}", input);
     // get forward and reverse version of the word
     const WORD: &str = "XMAS";
     // parse input into 2d matrix
@@ -41,7 +41,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         input.lines().next().unwrap().chars().count(),
         input.lines().count(),
     );
-    println!("{:?}", mtx);
+    // println!("{:?}", mtx);
 
     // left-right checking
     for y in 0..mtx.height {
@@ -99,8 +99,40 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(total)
 }
 
+const MAS_WINDOW1: [(usize, usize); 3] = [(0, 0), (1, 1), (2, 2)];
+const MAS_WINDOW2: [(usize, usize); 3] = [(0, 2), (1, 1), (2, 0)];
+
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let mut total = 0;
+    // println!("{}", input);
+    // parse input into 2d matrix
+    let mtx = Matrix::new(
+        input.lines().map(|x| x.chars()).flatten().collect(),
+        input.lines().next().unwrap().chars().count(),
+        input.lines().count(),
+    );
+    // println!("{:?}", mtx);
+
+    // leftdown-rightup checking
+    for y in 0..mtx.height - 2 {
+        for x in 0..mtx.width - 2 {
+            let slice1: String = MAS_WINDOW1
+                .iter()
+                .map(|i| mtx.get(x + i.0, y + i.1))
+                .collect();
+            if slice1 == "MAS" || slice1 == "SAM" {
+                let slice2: String = MAS_WINDOW2
+                    .iter()
+                    .map(|i| mtx.get(x + i.0, y + i.1))
+                    .collect();
+                if slice2 == "MAS" || slice2 == "SAM" {
+                    total += 1;
+                }
+            }
+        }
+    }
+
+    Some(total)
 }
 
 fn is_word_match(slice: &String) -> bool {
@@ -120,6 +152,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(9));
     }
 }
