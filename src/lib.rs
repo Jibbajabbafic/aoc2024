@@ -1,6 +1,56 @@
 pub mod template;
 
 // Use this file to add helper functions and additional modules.
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub struct Position {
+    pub x: i32,
+    pub y: i32,
+}
+
+impl Position {
+    pub fn take_step(&self, dir: Direction) -> Position {
+        match dir {
+            Direction::Up => Position {
+                x: self.x,
+                y: self.y - 1,
+            },
+            Direction::Right => Position {
+                x: self.x + 1,
+                y: self.y,
+            },
+            Direction::Down => Position {
+                x: self.x,
+                y: self.y + 1,
+            },
+            Direction::Left => Position {
+                x: self.x - 1,
+                y: self.y,
+            },
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[repr(i32)]
+pub enum Direction {
+    Up = 0,
+    Right = 1,
+    Down = 2,
+    Left = 3,
+}
+
+impl Direction {
+    pub fn rotate_clockwise(&self) -> Direction {
+        match self {
+            Direction::Up => Direction::Right,
+            Direction::Right => Direction::Down,
+            Direction::Down => Direction::Left,
+            Direction::Left => Direction::Up,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Matrix {
     data: Vec<char>,
@@ -35,36 +85,43 @@ impl Matrix {
         println!("{}", s);
     }
 
-    pub fn get(&self, x: i32, y: i32) -> Option<char> {
-        if self.is_in_bounds(x, y) {
-            Some(self.data[self.get_index(x, y)])
+    pub fn get(&self, pos: Position) -> Option<char> {
+        if self.is_in_bounds(&pos) {
+            Some(self.data[self.get_index(&pos)])
         } else {
             None
         }
     }
 
-    pub fn set(&mut self, x: i32, y: i32, value: char) {
-        if !self.is_in_bounds(x, y) {
+    pub fn set(&mut self, pos: &Position, value: char) {
+        if !self.is_in_bounds(&pos) {
             return;
         }
-        let i = self.get_index(x, y);
+        let i = self.get_index(&pos);
         self.data[i] = value;
     }
 
-    pub fn find(&self, in_char: char) -> Option<(i32, i32)> {
+    pub fn find(&self, in_char: char) -> Option<Position> {
         for (i, cur_char) in self.data.iter().enumerate() {
             if *cur_char == in_char {
-                return Some(((i % self.width) as i32, (i / self.width) as i32));
+                return Some(self.get_position(i));
             }
         }
         None
     }
 
-    pub fn is_in_bounds(&self, x: i32, y: i32) -> bool {
-        return x >= 0 && x < self.width as i32 && y >= 0 && y < self.height as i32;
+    pub fn is_in_bounds(&self, pos: &Position) -> bool {
+        return pos.x >= 0 && pos.x < self.width as i32 && pos.y >= 0 && pos.y < self.height as i32;
     }
 
-    fn get_index(&self, x: i32, y: i32) -> usize {
-        (x + y * self.width as i32) as usize
+    fn get_index(&self, pos: &Position) -> usize {
+        (pos.x as usize + pos.y as usize * self.width) as usize
+    }
+
+    fn get_position(&self, index: usize) -> Position {
+        Position {
+            x: (index % self.width) as i32,
+            y: (index / self.width) as i32,
+        }
     }
 }
