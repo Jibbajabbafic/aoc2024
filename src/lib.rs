@@ -1,3 +1,5 @@
+use std::ops::{Add, Mul, Sub};
+
 pub mod template;
 
 // Use this file to add helper functions and additional modules.
@@ -9,6 +11,10 @@ pub struct Position {
 }
 
 impl Position {
+    pub fn new(x: i32, y: i32) -> Self {
+        Self { x, y }
+    }
+
     pub fn take_step(&self, dir: Direction) -> Position {
         match dir {
             Direction::Up => Position {
@@ -27,6 +33,36 @@ impl Position {
                 x: self.x - 1,
                 y: self.y,
             },
+        }
+    }
+}
+
+impl Add for Position {
+    type Output = Position;
+    fn add(self, rhs: Self) -> Self::Output {
+        Self::Output {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
+    }
+}
+
+impl Sub for Position {
+    type Output = Position;
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self::Output {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
+    }
+}
+
+impl Mul<i32> for Position {
+    type Output = Position;
+    fn mul(self, rhs: i32) -> Self::Output {
+        Self::Output {
+            x: self.x * rhs,
+            y: self.y * rhs,
         }
     }
 }
