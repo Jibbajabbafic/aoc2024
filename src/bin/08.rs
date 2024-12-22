@@ -58,22 +58,31 @@ pub fn part_two(input: &str) -> Option<u32> {
     let map = AntennaMap::parse_input(&input);
     let mut antinodes = HashSet::<Position>::new();
     for values in map.antennas.values() {
-        // TODO add antennas as antinodes if there's a pair
-        // TODO check each interval of the difference vector between pairs (until out of bounds max 10?)
         for (&a, &b) in values.iter().tuple_combinations() {
-            let anti_node1 = a + ((b - a) * 2);
-            if is_in_bounds(anti_node1, map.width, map.height) {
-                antinodes.insert(anti_node1);
+            let mut i = 0;
+            loop {
+                let antinode = a + ((b - a) * i);
+                if is_in_bounds(antinode, map.width, map.height) {
+                    antinodes.insert(antinode);
+                } else {
+                    break;
+                }
+                i += 1;
             }
-            let anti_node2 = b + ((a - b) * 2);
-            if is_in_bounds(anti_node2, map.width, map.height) {
-                antinodes.insert(anti_node2);
+            i = 0;
+            loop {
+                let antinode = b + ((a - b) * i);
+                if is_in_bounds(antinode, map.width, map.height) {
+                    antinodes.insert(antinode);
+                } else {
+                    break;
+                }
+                i += 1;
             }
         }
     }
 
-    // Some(antinodes.len() as u32)
-    None
+    Some(antinodes.len() as u32)
 }
 
 #[cfg(test)]
@@ -105,8 +114,7 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        //Some(34)
-        assert_eq!(result, None);
+        assert_eq!(result, Some(34));
     }
 
     #[test]
@@ -114,7 +122,6 @@ mod tests {
         let result = part_two(&advent_of_code::template::read_file_part(
             "examples", DAY, 3,
         ));
-        //Some(9)
-        assert_eq!(result, None);
+        assert_eq!(result, Some(9));
     }
 }
