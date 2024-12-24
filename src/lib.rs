@@ -11,6 +11,11 @@ pub struct Position {
 }
 
 impl Position {
+    pub const UP: Position = Position { x: 0, y: -1 };
+    pub const DOWN: Position = Position { x: 0, y: 1 };
+    pub const LEFT: Position = Position { x: -1, y: 0 };
+    pub const RIGHT: Position = Position { x: 1, y: 0 };
+
     pub fn new(x: i32, y: i32) -> Self {
         Self { x, y }
     }
@@ -144,6 +149,26 @@ impl Matrix {
             }
         }
         None
+    }
+
+    pub fn find_all(&self, in_char: char) -> Option<Vec<Position>> {
+        let result: Vec<Position> = self
+            .data
+            .iter()
+            .enumerate()
+            .filter_map(|(i, c)| {
+                if *c == in_char {
+                    Some(self.get_position(i))
+                } else {
+                    None
+                }
+            })
+            .collect();
+        if result.len() > 0 {
+            Some(result)
+        } else {
+            None
+        }
     }
 
     pub fn is_in_bounds(&self, pos: &Position) -> bool {
