@@ -40,6 +40,15 @@ impl Position {
             },
         }
     }
+
+    pub fn get_adjacted_positions(pos: Position) -> [Position; 4] {
+        [
+            pos + Position::UP,
+            pos + Position::RIGHT,
+            pos + Position::DOWN,
+            pos + Position::LEFT,
+        ]
+    }
 }
 
 impl Add for Position {
@@ -95,8 +104,8 @@ impl Direction {
 #[derive(Debug, Clone)]
 pub struct Matrix {
     data: Vec<char>,
-    width: usize,
-    height: usize,
+    pub width: usize,
+    pub height: usize,
 }
 
 impl Matrix {
